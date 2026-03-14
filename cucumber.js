@@ -1,6 +1,6 @@
 module.exports = {
   default: {
-    requireModule: ['ts-node/register'],
+    requireModule: ['tsx'],
     require: ['features/support/**/*.ts', 'features/step-definitions/**/*.ts'],
     paths: ['features/**/*.feature'],
     format: [
