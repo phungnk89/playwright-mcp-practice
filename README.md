@@ -1,6 +1,11 @@
-# Playwright MCP - Cucumber BDD Test Automation
+# Playwright MCP - Test Automation
 
-End-to-end test automation framework using **Playwright** + **Cucumber.js (BDD)** + **TypeScript**, with **Playwright MCP** for AI-assisted test creation.
+End-to-end test automation framework using **Playwright** + **TypeScript**:
+
+- **UI tests** — Cucumber.js (BDD) + Playwright for browser testing against [the-internet.herokuapp.com](https://the-internet.herokuapp.com)
+- **API tests** — Playwright API testing against [restful-booker.herokuapp.com](https://restful-booker.herokuapp.com)
+
+With **Playwright MCP** for AI-assisted test creation.
 
 ---
 
@@ -12,6 +17,7 @@ End-to-end test automation framework using **Playwright** + **Cucumber.js (BDD)*
 - [How It Works](#how-it-works)
 - [Writing Tests](#writing-tests)
 - [Running Tests](#running-tests)
+- [API Tests](#api-tests)
 - [Setting Up Playwright MCP](#setting-up-playwright-mcp)
 - [Using MCP to Create Tests](#using-mcp-to-create-tests)
 
@@ -58,7 +64,7 @@ This downloads Chromium, Firefox, and WebKit browsers used by Playwright.
 ### 4. Verify setup
 
 ```bash
-npm run test
+npm run test:ui
 ```
 
 You should see a progress bar and scenario results in the terminal.
@@ -70,17 +76,18 @@ You should see a progress bar and scenario results in the terminal.
 ```
 playwright-mcp/
 ├── cucumber.js                  # Cucumber configuration (format, parallel, paths)
+├── playwright.config.ts         # Playwright configuration for API tests
 ├── tsconfig.json                # TypeScript configuration
 ├── package.json                 # Dependencies and scripts
 │
-├── features/                    # Test layer
+├── features/                    # UI test layer (BDD)
 │   ├── *.feature                # Gherkin feature files (test scenarios)
 │   ├── step-definitions/        # Step definitions (glue code)
 │   │   ├── common.steps.ts      # Shared steps (navigation, URL checks)
 │   │   └── *.steps.ts           # Feature-specific steps
 │   └── support/                 # Framework support files
 │       ├── world.ts             # PlaywrightWorld (browser lifecycle)
-│       ├── hooks.ts             # Before/After hooks
+│       ├── hooks.ts             # Before/After hooks (incl. failure screenshots)
 │       └── scenario-progress-formatter.ts  # Custom progress formatter
 │
 ├── objects/                     # Page Object layer
@@ -88,7 +95,12 @@ playwright-mcp/
 │   ├── heroku-home.page.ts      # Home page object
 │   └── *.page.ts                # Feature-specific page objects
 │
-└── cucumber-report.html         # Generated HTML test report
+├── api-tests/                   # API test layer (Playwright Test)
+│   ├── ping.spec.ts             # Health check endpoint test
+│   ├── auth.spec.ts             # Auth token tests
+│   └── booking.spec.ts          # Booking CRUD tests
+│
+└── .github/workflows/test.yml   # CI pipeline (API + UI tests)
 ```
 
 ### Layer Breakdown
@@ -261,17 +273,23 @@ Then(
 ### Step 4: Run the Test
 
 ```bash
-npm run test
+npm run test:ui
 ```
 
 ---
 
 ## Running Tests
 
-### Run all tests
+### Run all UI tests
 
 ```bash
-npm run test
+npm run test:ui
+```
+
+### Run all API tests
+
+```bash
+npm run test:api
 ```
 
 ### Run a specific feature
@@ -296,6 +314,32 @@ npx cucumber-js --tags "@smoke"
 
 ```bash
 npx cucumber-js --profile smoke
+```
+
+---
+
+## API Tests
+
+API tests use Playwright's built-in `APIRequestContext` to test the [Restful Booker API](https://restful-booker.herokuapp.com).
+
+### Test Coverage
+
+| Test File         | Endpoints                            | Tests                      |
+| ----------------- | ------------------------------------ | -------------------------- |
+| `ping.spec.ts`    | `GET /ping`                          | Health check               |
+| `auth.spec.ts`    | `POST /auth`                         | Valid/invalid credentials  |
+| `booking.spec.ts` | `GET/POST/PUT/PATCH/DELETE /booking` | Full CRUD, filtering, auth |
+
+### Run API tests
+
+```bash
+npm run test:api
+```
+
+### View HTML report
+
+```bash
+npx playwright show-report api-test-report
 ```
 
 ---
@@ -420,7 +464,7 @@ Copilot will physically click the checkbox in the browser, observe the result, a
 ```javascript
 module.exports = {
   default: {
-    requireModule: ['ts-node/register'], // Enable TypeScript
+    requireModule: ['tsx'], // Enable TypeScript
     require: [
       'features/support/**/*.ts', // Load hooks & world
       'features/step-definitions/**/*.ts', // Load step definitions
@@ -430,7 +474,8 @@ module.exports = {
       './features/support/scenario-progress-formatter.ts', // Custom formatter
       'html:cucumber-report.html', // HTML report output
     ],
-    parallel: 5, // Number of parallel workers
+    parallel: 10, // Number of parallel workers
+    retry: 1, // Retry failed scenarios once
   },
 };
 ```

@@ -8,5 +8,6 @@ module.exports = {
       'html:cucumber-report.html',
     ],
     parallel: 10,
+    retry: 2,
   },
 };

@@ -6,6 +6,8 @@ dist/
 
 # Test reports
 cucumber-report.html
+api-test-report/
+test-results/
 
 # OS files
 .DS_Store
