@@ -76,35 +76,40 @@ You should see test results in the terminal.
 ```
 playwright-mcp/
 ├── playwright.config.ts         # Playwright configuration (UI + API projects)
-├── tsconfig.json                # TypeScript configuration
+├── tsconfig.json                # TypeScript config with path aliases
 ├── package.json                 # Dependencies and scripts
 │
-├── ui-tests/                    # UI test layer (Playwright Test)
-│   ├── ab-testing.spec.ts       # A/B Testing tests
-│   ├── checkboxes.spec.ts       # Checkboxes tests
-│   ├── form-auth.spec.ts        # Form Authentication tests
-│   └── *.spec.ts                # 44 spec files covering 87 test cases
+├── tests/                       # All test files
+│   ├── ui-tests/                # UI test layer (Playwright Test)
+│   │   ├── ab-testing.spec.ts   # A/B Testing tests
+│   │   ├── checkboxes.spec.ts   # Checkboxes tests
+│   │   ├── form-auth.spec.ts    # Form Authentication tests
+│   │   └── *.spec.ts            # 44 spec files covering 87 test cases
+│   └── api-tests/               # API test layer (Playwright Test)
+│       ├── ping.spec.ts         # Health check endpoint test
+│       ├── auth.spec.ts         # Auth token tests
+│       └── booking.spec.ts      # Booking CRUD tests
 │
-├── objects/                     # Page Object layer
-│   ├── index.ts                 # Barrel export for all page objects
-│   ├── heroku-home.page.ts      # Home page object
-│   └── *.page.ts                # Feature-specific page objects
-│
-├── api-tests/                   # API test layer (Playwright Test)
-│   ├── ping.spec.ts             # Health check endpoint test
-│   ├── auth.spec.ts             # Auth token tests
-│   └── booking.spec.ts          # Booking CRUD tests
+├── src/                         # Source / shared code
+│   ├── objects/                 # Page Object layer (@objects alias)
+│   │   ├── index.ts             # Barrel export for all page objects
+│   │   ├── heroku-home.page.ts  # Home page object
+│   │   └── *.page.ts            # Feature-specific page objects
+│   ├── utils/                   # Utility functions (@utils alias)
+│   └── data/                    # Test data (@data alias)
 │
 └── .github/workflows/test.yml   # CI pipeline (API + UI tests)
 ```
 
 ### Layer Breakdown
 
-| Layer            | Directory             | Purpose                                                                |
-| ---------------- | --------------------- | ---------------------------------------------------------------------- |
-| **UI tests**     | `ui-tests/*.spec.ts`  | Playwright Test specs — describes **what** to test                     |
-| **Page objects** | `objects/*.page.ts`   | Encapsulates page selectors and actions — keeps tests **maintainable** |
-| **API tests**    | `api-tests/*.spec.ts` | API endpoint tests using Playwright's `APIRequestContext`              |
+| Layer            | Directory                   | Alias      | Purpose                                                                |
+| ---------------- | --------------------------- | ---------- | ---------------------------------------------------------------------- |
+| **UI tests**     | `tests/ui-tests/*.spec.ts`  | —          | Playwright Test specs — describes **what** to test                     |
+| **API tests**    | `tests/api-tests/*.spec.ts` | —          | API endpoint tests using Playwright's `APIRequestContext`              |
+| **Page objects** | `src/objects/*.page.ts`     | `@objects` | Encapsulates page selectors and actions — keeps tests **maintainable** |
+| **Utilities**    | `src/utils/`                | `@utils/*` | Shared helper functions                                                |
+| **Test data**    | `src/data/`                 | `@data/*`  | Test data and fixtures                                                 |
 
 ---
 
@@ -125,9 +130,9 @@ Browser (Playwright)
 Describes test scenarios using Playwright Test:
 
 ```typescript
-// ui-tests/checkboxes.spec.ts
+// tests/ui-tests/checkboxes.spec.ts
 import { test, expect } from '@playwright/test';
-import { HerokuHomePage, CheckboxesPage } from '../objects';
+import { HerokuHomePage, CheckboxesPage } from '@objects';
 
 test.describe('Checkboxes', () => {
   let homePage: HerokuHomePage;
@@ -152,7 +157,7 @@ test.describe('Checkboxes', () => {
 Encapsulates selectors and actions for a page:
 
 ```typescript
-// objects/checkboxes.page.ts
+// src/objects/checkboxes.page.ts
 import { type Locator, type Page } from '@playwright/test';
 
 export class CheckboxesPage {
@@ -178,7 +183,7 @@ export class CheckboxesPage {
 
 ### Step 1: Create a Page Object
 
-Create `objects/my-feature.page.ts`:
+Create `src/objects/my-feature.page.ts`:
 
 ```typescript
 import { type Locator, type Page } from '@playwright/test';
@@ -194,7 +199,7 @@ export class MyFeaturePage {
 }
 ```
 
-Export it from `objects/index.ts`:
+Export it from `src/objects/index.ts`:
 
 ```typescript
 export { MyFeaturePage } from './my-feature.page';
@@ -202,11 +207,11 @@ export { MyFeaturePage } from './my-feature.page';
 
 ### Step 2: Create a Spec File
 
-Create `ui-tests/my-feature.spec.ts`:
+Create `tests/ui-tests/my-feature.spec.ts`:
 
 ```typescript
 import { test, expect } from '@playwright/test';
-import { HerokuHomePage, MyFeaturePage } from '../objects';
+import { HerokuHomePage, MyFeaturePage } from '@objects';
 
 test.describe('My Feature', () => {
   test.beforeEach(async ({ page }) => {
@@ -254,7 +259,7 @@ npm run test:api
 ### Run a specific spec file
 
 ```bash
-npx playwright test ui-tests/checkboxes.spec.ts
+npx playwright test tests/ui-tests/checkboxes.spec.ts
 ```
 
 ### Run tests by name
@@ -440,7 +445,7 @@ export default defineConfig({
   projects: [
     {
       name: 'ui',
-      testDir: './ui-tests',
+      testDir: './tests/ui-tests',
       use: {
         ...devices['Desktop Chrome'],
         baseURL: 'https://the-internet.herokuapp.com',
@@ -449,7 +454,7 @@ export default defineConfig({
     },
     {
       name: 'api',
-      testDir: './api-tests',
+      testDir: './tests/api-tests',
       use: {
         baseURL: 'https://restful-booker.herokuapp.com',
         extraHTTPHeaders: {
@@ -460,6 +465,27 @@ export default defineConfig({
     },
   ],
 });
+```
+
+### tsconfig.json — Path Aliases
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@objects": ["src/objects/index.ts"],
+      "@utils/*": ["src/utils/*"],
+      "@data/*": ["src/data/*"]
+    }
+  }
+}
+```
+
+Use aliases in test files:
+
+```typescript
+import { HerokuHomePage } from '@objects';
 ```
 
 ### Key Playwright CLI Options
