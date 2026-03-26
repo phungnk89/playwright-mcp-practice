@@ -2,7 +2,7 @@
 
 End-to-end test automation framework using **Playwright** + **TypeScript**:
 
-- **UI tests** — Cucumber.js (BDD) + Playwright for browser testing against [the-internet.herokuapp.com](https://the-internet.herokuapp.com)
+- **UI tests** — Playwright Test for browser testing against [the-internet.herokuapp.com](https://the-internet.herokuapp.com)
 - **API tests** — Playwright API testing against [restful-booker.herokuapp.com](https://restful-booker.herokuapp.com)
 
 With **Playwright MCP** for AI-assisted test creation.
@@ -27,7 +27,7 @@ With **Playwright MCP** for AI-assisted test creation.
 
 - **Node.js** >= 18 (recommended: latest LTS)
 - **npm** (comes with Node.js)
-- **VS Code** with [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) extension
+- **VS Code** with [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) and [Playwright Test](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) extensions
 
 Verify your installation:
 
@@ -67,7 +67,7 @@ This downloads Chromium, Firefox, and WebKit browsers used by Playwright.
 npm run test:ui
 ```
 
-You should see a progress bar and scenario results in the terminal.
+You should see test results in the terminal.
 
 ---
 
@@ -75,20 +75,15 @@ You should see a progress bar and scenario results in the terminal.
 
 ```
 playwright-mcp/
-├── cucumber.js                  # Cucumber configuration (format, parallel, paths)
-├── playwright.config.ts         # Playwright configuration for API tests
+├── playwright.config.ts         # Playwright configuration (UI + API projects)
 ├── tsconfig.json                # TypeScript configuration
 ├── package.json                 # Dependencies and scripts
 │
-├── features/                    # UI test layer (BDD)
-│   ├── *.feature                # Gherkin feature files (test scenarios)
-│   ├── step-definitions/        # Step definitions (glue code)
-│   │   ├── common.steps.ts      # Shared steps (navigation, URL checks)
-│   │   └── *.steps.ts           # Feature-specific steps
-│   └── support/                 # Framework support files
-│       ├── world.ts             # PlaywrightWorld (browser lifecycle)
-│       ├── hooks.ts             # Before/After hooks (incl. failure screenshots)
-│       └── scenario-progress-formatter.ts  # Custom progress formatter
+├── ui-tests/                    # UI test layer (Playwright Test)
+│   ├── ab-testing.spec.ts       # A/B Testing tests
+│   ├── checkboxes.spec.ts       # Checkboxes tests
+│   ├── form-auth.spec.ts        # Form Authentication tests
+│   └── *.spec.ts                # 44 spec files covering 87 test cases
 │
 ├── objects/                     # Page Object layer
 │   ├── index.ts                 # Barrel export for all page objects
@@ -105,77 +100,54 @@ playwright-mcp/
 
 ### Layer Breakdown
 
-| Layer                | Directory                              | Purpose                                                                          |
-| -------------------- | -------------------------------------- | -------------------------------------------------------------------------------- |
-| **Feature files**    | `features/*.feature`                   | Written in Gherkin syntax — describes **what** to test in plain English          |
-| **Step definitions** | `features/step-definitions/*.steps.ts` | Maps Gherkin steps to Playwright actions — the **glue** between feature and code |
-| **Page objects**     | `objects/*.page.ts`                    | Encapsulates page selectors and actions — keeps tests **maintainable**           |
-| **Support**          | `features/support/`                    | Framework setup: browser lifecycle, hooks, formatters                            |
+| Layer            | Directory             | Purpose                                                                |
+| ---------------- | --------------------- | ---------------------------------------------------------------------- |
+| **UI tests**     | `ui-tests/*.spec.ts`  | Playwright Test specs — describes **what** to test                     |
+| **Page objects** | `objects/*.page.ts`   | Encapsulates page selectors and actions — keeps tests **maintainable** |
+| **API tests**    | `api-tests/*.spec.ts` | API endpoint tests using Playwright's `APIRequestContext`              |
 
 ---
 
 ## How It Works
 
-The test flow follows the **BDD (Behavior-Driven Development)** pattern:
+The test flow follows the **Page Object Model** pattern:
 
 ```
-Feature File (.feature)
-    ↓  Gherkin steps are matched to...
-Step Definitions (.steps.ts)
-    ↓  Step definitions use...
+Spec File (.spec.ts)
+    ↓  Tests use...
 Page Objects (.page.ts)
     ↓  Page objects interact with...
 Browser (Playwright)
 ```
 
-### 1. Feature File (Gherkin)
+### 1. Spec File
 
-Describes test scenarios in human-readable language:
-
-```gherkin
-Feature: Checkboxes
-  As a user
-  I want to interact with checkboxes
-  So that I can verify checkbox toggling behavior
-
-  Background:
-    Given I am on the Heroku home page
-    And I click on the "Checkboxes" example
-
-  Scenario: Toggle checkbox 1
-    When I toggle checkbox 0
-    Then checkbox 0 should be checked
-```
-
-### 2. Step Definition
-
-Maps each Gherkin step to TypeScript/Playwright code:
+Describes test scenarios using Playwright Test:
 
 ```typescript
-// features/step-definitions/checkboxes.steps.ts
-import { Then, When } from '@cucumber/cucumber';
-import { expect } from '@playwright/test';
-import { CheckboxesPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+// ui-tests/checkboxes.spec.ts
+import { test, expect } from '@playwright/test';
+import { HerokuHomePage, CheckboxesPage } from '../objects';
 
-When(
-  'I toggle checkbox {int}',
-  async function (this: PlaywrightWorld, index: number) {
-    const page = new CheckboxesPage(this.page);
-    await page.toggleCheckbox(index);
-  },
-);
+test.describe('Checkboxes', () => {
+  let homePage: HerokuHomePage;
+  let checkboxesPage: CheckboxesPage;
 
-Then(
-  'checkbox {int} should be checked',
-  async function (this: PlaywrightWorld, index: number) {
-    const page = new CheckboxesPage(this.page);
-    await expect(page.checkboxes.nth(index)).toBeChecked();
-  },
-);
+  test.beforeEach(async ({ page }) => {
+    homePage = new HerokuHomePage(page);
+    await homePage.navigate();
+    await homePage.clickExample('Checkboxes');
+    checkboxesPage = new CheckboxesPage(page);
+  });
+
+  test('Toggle checkbox 1', async () => {
+    await checkboxesPage.toggleCheckbox(0);
+    await expect(checkboxesPage.checkboxes.nth(0)).toBeChecked();
+  });
+});
 ```
 
-### 3. Page Object
+### 2. Page Object
 
 Encapsulates selectors and actions for a page:
 
@@ -200,34 +172,11 @@ export class CheckboxesPage {
 }
 ```
 
-### 4. World & Hooks
-
-- **World** (`features/support/world.ts`) — Manages the browser/page lifecycle. Each scenario gets a fresh browser instance.
-- **Hooks** (`features/support/hooks.ts`) — `Before` hook launches the browser, `After` hook closes it.
-
 ---
 
 ## Writing Tests
 
-### Step 1: Create a Feature File
-
-Create `features/my-feature.feature`:
-
-```gherkin
-Feature: My Feature
-  As a user
-  I want to test something
-  So that I can verify it works
-
-  Background:
-    Given I am on the Heroku home page
-    And I click on the "Some Link" example
-
-  Scenario: Verify page loads
-    Then the URL should match "/some-page"
-```
-
-### Step 2: Create a Page Object
+### Step 1: Create a Page Object
 
 Create `objects/my-feature.page.ts`:
 
@@ -251,26 +200,30 @@ Export it from `objects/index.ts`:
 export { MyFeaturePage } from './my-feature.page';
 ```
 
-### Step 3: Create Step Definitions
+### Step 2: Create a Spec File
 
-Create `features/step-definitions/my-feature.steps.ts`:
+Create `ui-tests/my-feature.spec.ts`:
 
 ```typescript
-import { Then } from '@cucumber/cucumber';
-import { expect } from '@playwright/test';
-import { MyFeaturePage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { test, expect } from '@playwright/test';
+import { HerokuHomePage, MyFeaturePage } from '../objects';
 
-Then(
-  'the My Feature heading should be visible',
-  async function (this: PlaywrightWorld) {
-    const page = new MyFeaturePage(this.page);
-    await expect(page.heading).toBeVisible({ timeout: 10000 });
-  },
-);
+test.describe('My Feature', () => {
+  test.beforeEach(async ({ page }) => {
+    const homePage = new HerokuHomePage(page);
+    await homePage.navigate();
+    await homePage.clickExample('My Feature');
+  });
+
+  test('Verify page loads', async ({ page }) => {
+    await expect(page).toHaveURL(/\/my-feature/);
+    const myFeaturePage = new MyFeaturePage(page);
+    await expect(myFeaturePage.heading).toBeVisible();
+  });
+});
 ```
 
-### Step 4: Run the Test
+### Step 3: Run the Test
 
 ```bash
 npm run test:ui
@@ -279,6 +232,12 @@ npm run test:ui
 ---
 
 ## Running Tests
+
+### Run all tests (UI + API)
+
+```bash
+npm test
+```
 
 ### Run all UI tests
 
@@ -292,28 +251,45 @@ npm run test:ui
 npm run test:api
 ```
 
-### Run a specific feature
+### Run a specific spec file
 
 ```bash
-npx cucumber-js features/checkboxes.feature
+npx playwright test ui-tests/checkboxes.spec.ts
 ```
 
-### Run scenarios by name
+### Run tests by name
 
 ```bash
-npx cucumber-js --name "Toggle checkbox"
+npx playwright test --grep "Toggle checkbox"
 ```
 
-### Run scenarios by tag
+### Run tests with tag annotation
 
-```bash
-npx cucumber-js --tags "@smoke"
+```typescript
+// In your spec file, use test annotations:
+test('my test @smoke', async ({ page }) => { ... });
 ```
 
-### Run with a specific profile
+```bash
+npx playwright test --grep "@smoke"
+```
+
+### View HTML report
 
 ```bash
-npx cucumber-js --profile smoke
+npx playwright show-report
+```
+
+### Run in headed mode (see the browser)
+
+```bash
+npx playwright test --project=ui --headed
+```
+
+### Run in UI mode (interactive)
+
+```bash
+npx playwright test --project=ui --ui
 ```
 
 ---
@@ -334,12 +310,6 @@ API tests use Playwright's built-in `APIRequestContext` to test the [Restful Boo
 
 ```bash
 npm run test:api
-```
-
-### View HTML report
-
-```bash
-npx playwright show-report api-test-report
 ```
 
 ---
@@ -412,17 +382,16 @@ Copilot will launch a browser, navigate to the page, and capture a snapshot of a
 #### 2. Ask Copilot to generate a test
 
 ```
-Based on the page snapshot, create a Cucumber feature file,
-step definitions, and page object for testing the checkboxes
-on this page. Follow the existing project structure.
+Based on the page snapshot, create a Playwright spec file
+and page object for testing the checkboxes on this page.
+Follow the existing project structure.
 ```
 
 Copilot will:
 
 - Inspect the page elements from the snapshot
-- Generate a `.feature` file with Gherkin scenarios
 - Generate a `.page.ts` page object with selectors
-- Generate a `.steps.ts` step definition with Playwright actions
+- Generate a `.spec.ts` test file with Playwright actions and assertions
 
 #### 3. Ask Copilot to interact and verify
 
@@ -451,7 +420,7 @@ Copilot will physically click the checkbox in the browser, observe the result, a
 
 1. **Start by navigating** — Always navigate to the target page first so Copilot can see the elements.
 2. **Take snapshots** — Snapshots give Copilot the page structure to write accurate selectors.
-3. **Be specific** — Tell Copilot to follow your project patterns (page objects, step definitions, feature files).
+3. **Be specific** — Tell Copilot to follow your project patterns (page objects, spec files).
 4. **Iterate** — Ask Copilot to interact with elements, then verify the behavior before writing the test.
 5. **Review generated code** — Always review AI-generated selectors and assertions for accuracy.
 
@@ -459,45 +428,48 @@ Copilot will physically click the checkbox in the browser, observe the result, a
 
 ## Configuration Reference
 
-### cucumber.js
+### playwright.config.ts
 
-```javascript
-module.exports = {
-  default: {
-    requireModule: ['tsx'], // Enable TypeScript
-    require: [
-      'features/support/**/*.ts', // Load hooks & world
-      'features/step-definitions/**/*.ts', // Load step definitions
-    ],
-    paths: ['features/**/*.feature'], // Feature file locations
-    format: [
-      './features/support/scenario-progress-formatter.ts', // Custom formatter
-      'html:cucumber-report.html', // HTML report output
-    ],
-    parallel: 10, // Number of parallel workers
-    retry: 1, // Retry failed scenarios once
-  },
-};
+```typescript
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  fullyParallel: true,
+  retries: 2,
+  reporter: [['list'], ['html']],
+  projects: [
+    {
+      name: 'ui',
+      testDir: './ui-tests',
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: 'https://the-internet.herokuapp.com',
+        viewport: { width: 1920, height: 1080 },
+      },
+    },
+    {
+      name: 'api',
+      testDir: './api-tests',
+      use: {
+        baseURL: 'https://restful-booker.herokuapp.com',
+        extraHTTPHeaders: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      },
+    },
+  ],
+});
 ```
 
-### Key Tags
-
-Use tags to categorize and filter tests:
-
-```gherkin
-@smoke
-Scenario: Critical login test
-  ...
-
-@regression
-Scenario: Full form validation
-  ...
-```
-
-Run filtered:
+### Key Playwright CLI Options
 
 ```bash
-npx cucumber-js --tags "@smoke"
-npx cucumber-js --tags "not @slow"
-npx cucumber-js --tags "@smoke and @login"
+npx playwright test --project=ui          # Run only UI tests
+npx playwright test --project=api         # Run only API tests
+npx playwright test --grep "login"        # Filter by test name
+npx playwright test --headed              # Run with visible browser
+npx playwright test --ui                  # Interactive UI mode
+npx playwright test --workers=4           # Control parallelism
+npx playwright test --retries=0           # Disable retries
 ```
