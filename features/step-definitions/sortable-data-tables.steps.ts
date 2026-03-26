@@ -1,7 +1,7 @@
 import { Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { SortableDataTablesPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { SortableDataTablesPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Sortable Data Tables heading should be visible',

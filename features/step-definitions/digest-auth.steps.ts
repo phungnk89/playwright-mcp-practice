@@ -1,7 +1,7 @@
 import { Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { DigestAuthPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { DigestAuthPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Digest Auth heading should be visible',

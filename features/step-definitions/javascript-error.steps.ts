@@ -1,6 +1,6 @@
 import { Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { PlaywrightWorld } from '../support/world';
+import { PlaywrightWorld } from '@support/world';
 
 When('I listen for JavaScript errors', async function (this: PlaywrightWorld) {
   (this as any)._jsErrors = [] as string[];

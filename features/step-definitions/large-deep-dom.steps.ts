@@ -1,7 +1,7 @@
 import { Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { LargeDeepDomPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { LargeDeepDomPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Large Deep DOM heading should be visible',

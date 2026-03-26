@@ -1,7 +1,7 @@
 import { Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { StatusCodesPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { StatusCodesPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Status Codes heading should be visible',

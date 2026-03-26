@@ -1,7 +1,7 @@
 import { Given, Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { DynamicControlsPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { DynamicControlsPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Dynamic Controls heading should be visible',

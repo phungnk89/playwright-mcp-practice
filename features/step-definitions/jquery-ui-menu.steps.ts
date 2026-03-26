@@ -1,7 +1,7 @@
 import { Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { JQueryUIMenuPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { JQueryUIMenuPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the JQuery UI Menu heading should be visible',

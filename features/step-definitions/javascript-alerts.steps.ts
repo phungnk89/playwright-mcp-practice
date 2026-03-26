@@ -1,7 +1,7 @@
 import { Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { JavaScriptAlertsPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { JavaScriptAlertsPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the JavaScript Alerts heading should be visible',

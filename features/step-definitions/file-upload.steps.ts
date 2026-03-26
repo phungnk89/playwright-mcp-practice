@@ -2,8 +2,8 @@ import { Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
-import { FileUploadPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { FileUploadPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the File Upload heading should be visible',

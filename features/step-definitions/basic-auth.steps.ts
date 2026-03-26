@@ -1,7 +1,7 @@
 import { Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { BasicAuthPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { BasicAuthPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Basic Auth heading should be visible',

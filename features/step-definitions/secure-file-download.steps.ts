@@ -1,7 +1,7 @@
 import { Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { SecureFileDownloadPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { SecureFileDownloadPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Secure File Download heading should be visible',

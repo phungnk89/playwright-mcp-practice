@@ -1,7 +1,7 @@
 import { Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { GeolocationPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { GeolocationPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Geolocation heading should be visible',

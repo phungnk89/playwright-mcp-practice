@@ -1,7 +1,7 @@
 import { Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { WYSIWYGEditorPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { WYSIWYGEditorPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the WYSIWYG Editor heading should be visible',

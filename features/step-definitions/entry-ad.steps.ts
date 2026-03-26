@@ -1,7 +1,7 @@
 import { Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { EntryAdPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { EntryAdPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Entry Ad modal title should be visible',

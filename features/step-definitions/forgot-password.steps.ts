@@ -1,7 +1,7 @@
 import { Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { ForgotPasswordPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { ForgotPasswordPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Forgot Password heading should be visible',

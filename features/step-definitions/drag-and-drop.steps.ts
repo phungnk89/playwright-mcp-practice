@@ -1,7 +1,7 @@
 import { Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { DragAndDropPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { DragAndDropPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Drag and Drop heading should be visible',

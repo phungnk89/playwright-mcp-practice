@@ -1,7 +1,7 @@
 import { Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { HorizontalSliderPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { HorizontalSliderPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Horizontal Slider heading should be visible',

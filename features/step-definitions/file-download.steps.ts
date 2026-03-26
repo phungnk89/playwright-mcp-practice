@@ -1,7 +1,7 @@
 import { Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { FileDownloadPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { FileDownloadPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the File Download heading should be visible',

@@ -1,7 +1,7 @@
 import { Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { HoversPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { HoversPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Hovers heading should be visible',

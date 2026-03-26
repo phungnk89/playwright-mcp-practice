@@ -1,7 +1,7 @@
 import { Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { ShiftingContentPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { ShiftingContentPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Shifting Content heading should be visible',

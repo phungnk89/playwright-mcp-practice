@@ -1,7 +1,7 @@
 import { Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { DisappearingElementsPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { DisappearingElementsPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Disappearing Elements heading should be visible',

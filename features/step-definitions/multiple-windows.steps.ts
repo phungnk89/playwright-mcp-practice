@@ -1,7 +1,7 @@
 import { Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { MultipleWindowsPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { MultipleWindowsPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Multiple Windows heading should be visible',

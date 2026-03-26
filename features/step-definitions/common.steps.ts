@@ -1,7 +1,7 @@
 import { Given, Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { HerokuHomePage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { HerokuHomePage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Given('I am on the Heroku home page', async function (this: PlaywrightWorld) {
   const homePage = new HerokuHomePage(this.page);

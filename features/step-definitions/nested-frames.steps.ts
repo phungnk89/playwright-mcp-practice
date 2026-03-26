@@ -1,7 +1,7 @@
 import { Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { NestedFramesPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { NestedFramesPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the bottom frame should contain {string}',

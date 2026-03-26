@@ -1,7 +1,7 @@
 import { Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { RedirectLinkPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { RedirectLinkPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Redirect Link heading should be visible',

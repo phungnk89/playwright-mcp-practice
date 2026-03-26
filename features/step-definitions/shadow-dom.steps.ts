@@ -1,7 +1,7 @@
 import { Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { ShadowDomPage } from '../../objects';
-import { PlaywrightWorld } from '../support/world';
+import { ShadowDomPage } from '@objects';
+import { PlaywrightWorld } from '@support/world';
 
 Then(
   'the Shadow DOM heading should be visible',
