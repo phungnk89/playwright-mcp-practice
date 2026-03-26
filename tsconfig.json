@@ -10,11 +10,11 @@
     "rootDir": ".",
     "baseUrl": ".",
     "paths": {
-      "@objects": ["objects/index.ts"],
-      "@objects/*": ["objects/*"],
-      "@support/*": ["features/support/*"]
+      "@objects": ["src/objects/index.ts"],
+      "@utils/*": ["src/utils/*"],
+      "@data/*": ["src/data/*"]
     }
   },
-  "include": ["features/**/*.ts", "objects/**/*.ts"],
+  "include": ["tests/**/*.ts", "src/**/*.ts"],
   "exclude": ["node_modules"]
 }

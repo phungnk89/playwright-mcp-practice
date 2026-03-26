@@ -3,18 +3,16 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test:ui": "npx cucumber-js",
-    "test:api": "npx playwright test --config=playwright.config.ts"
+    "test:ui": "npx playwright test --project=ui",
+    "test:api": "npx playwright test --project=api",
+    "test": "npx playwright test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
-    "@cucumber/cucumber": "^11.3.0",
     "@playwright/test": "^1.58.2",
-    "@types/node": "^25.4.0",
-    "tsconfig-paths": "^4.2.0",
-    "tsx": "^4.21.0"
+    "@types/node": "^25.4.0"
   }
 }
